@@ -1,40 +1,60 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <div>
+      <label>아이디</label>
+      <input type="text" v-model="email"/>
+    </div>
+    <div>
+      <label>패스워드</label>
+      <input type="password" v-model="password"/>
+    </div>
+    <div>
+      <button @click="signIn()">로그인</button>
+      <button @click="signUp()">가입하기</button>
+    </div>    
   </div>
 </template>
 
 <script>
+import firebase from 'firebase'
 export default {
   name: 'HelloWorld',
-  props: {
-    msg: String
+  data () {
+    return {
+      email:'seocho@gmail.com',
+      password:'seocho01!!',
+    }
+  },
+  methods: {
+    signUp () {
+      console.log('signUp email:', this.email)
+      console.log('signUp password:', this.password)
+      firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+        .then((user) => {
+          console.log(user)
+          alert('가입되었습니다.')
+        })
+        .catch((error) => {
+          console.log(error)
+        })        
+    },
+    signIn(){
+      console.log('signIn email:', this.email)
+      console.log('signIn password:', this.password)
+      firebase.auth().signInWithEmailAndPassword(this.email, this.password)
+      .then( res => {
+        console.log('signin', res);              
+        this.$router.push({
+          path:`/list`,
+        })
+      })
+      .catch(function(error) {
+        console.log(error);        
+        if(error.code=='auth/user-not-found'){
+          alert('회원가입하세요.');          
+        }
+      });
+    }
   }
 }
 </script>
